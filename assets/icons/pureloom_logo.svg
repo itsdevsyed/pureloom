@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <!-- New gradient: sunset / pink tones -->
+    <linearGradient id="waveNew" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F59E0B"/> <!-- orange -->
+      <stop offset="30%" stop-color="#EF4444"/> <!-- red -->
+      <stop offset="70%" stop-color="#EC4899"/> <!-- pink -->
+      <stop offset="100%" stop-color="#8B5CF6"/> <!-- purple -->
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded rectangle -->
+  <rect width="256" height="256" rx="48" fill="url(#waveNew)"/>
+
+  <!-- Wave line -->
+  <path d="M40 160 Q 80 120, 128 160 T 216 160" stroke="#FFFFFF" stroke-width="16" fill="none" stroke-linecap="round"/>
+
+  <!-- Accent circle -->
+  <circle cx="200" cy="100" r="12" fill="#FFFFFF"/>
+</svg>

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/rendering.dart'; // 👈 Add this
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,48 +8,54 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  late PageController _pageController;
-  bool _isNavVisible = true;
 
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
+  // Example notification/message counts
+  int notificationsCount = 3;
+  int messagesCount = 4;
 
-  // Dummy pages
   final List<Widget> _pages = [
-    _buildPage("Home Page"),
-    _buildPage("Search Page"),
-    _buildPage("Post Upload Page"),
-    _buildPage("Notifications Page"),
-    _buildPage("Messages Page"),
-    _buildPage("Profile Page"),
+    Center(child: Text('Home', style: TextStyle(fontSize: 24))),
+    Center(child: Text('Search', style: TextStyle(fontSize: 24))),
+    Center(child: Text('Post', style: TextStyle(fontSize: 24))),
+    Center(child: Text('Notifications', style: TextStyle(fontSize: 24))),
+    Center(child: Text('Messages', style: TextStyle(fontSize: 24))),
+    Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
   ];
 
-  static Widget _buildPage(String title) {
-    return NotificationListener<UserScrollNotification>(
-      onNotification: (notification) {
-        return false; // Scroll detection handled outside
-      },
-      child: ListView.builder(
-        padding: EdgeInsets.all(16),
-        itemCount: 20,
-        itemBuilder: (context, index) => Card(
-          margin: EdgeInsets.only(bottom: 12),
-          elevation: 2,
-          child: ListTile(title: Text("$title - Item ${index + 1}")),
-        ),
-      ),
+  Widget _buildIconWithBadge(IconData icon, bool isSelected, int count) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(icon, size: isSelected ? 28 : 24, color: isSelected ? Colors.black : Colors.grey[400]),
+        if (count > 0)
+          Positioned(
+            right: -6,
+            top: -6,
+            child: Container(
+              padding: EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              constraints: BoxConstraints(
+                minWidth: 16,
+                minHeight: 16,
+              ),
+              child: Center(
+                child: Text(
+                  '$count',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
-  }
-
-  void _onScroll(UserScrollNotification notification) {
-    if (notification.direction == ScrollDirection.reverse && _isNavVisible) {
-      setState(() => _isNavVisible = false);
-    } else if (notification.direction == ScrollDirection.forward && !_isNavVisible) {
-      setState(() => _isNavVisible = true);
-    }
   }
 
   @override
@@ -58,56 +63,110 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0.5,
+        elevation: 0,
         title: Text(
           'Pureloom',
           style: GoogleFonts.poppins(
             color: Colors.black,
-            fontWeight: FontWeight.w700,
-            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            fontSize: 28,
           ),
         ),
         centerTitle: true,
       ),
-      body: NotificationListener<UserScrollNotification>(
-        onNotification: (notification) {
-          _onScroll(notification);
-          return true;
+      body: _pages[_currentIndex],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _currentIndex = 2; // Index for the 'Post' page
+          });
         },
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) => setState(() => _currentIndex = index),
-          children: _pages,
+        backgroundColor: Colors.black,
+        child: Icon(Icons.add, color: Colors.white, size: 30),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
         ),
+        elevation: 4,
       ),
-      bottomNavigationBar: AnimatedContainer(
-        duration: Duration(milliseconds: 250),
-        height: _isNavVisible ? kBottomNavigationBarHeight : 0,
-        child: Wrap(
-          children: [
-            BottomNavigationBar(
-              currentIndex: _currentIndex,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Colors.black,
-              unselectedItemColor: Colors.grey,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              selectedIconTheme: IconThemeData(size: 28, color: Colors.black),
-              unselectedIconTheme: IconThemeData(size: 26, color: Colors.grey),
-              onTap: (index) {
-                setState(() => _currentIndex = index);
-                _pageController.jumpToPage(index);
-              },
-              items: const [
-                BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-                BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-                BottomNavigationBarItem(icon: Icon(Icons.add_box_outlined), label: 'Post'),
-                BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
-                BottomNavigationBarItem(icon: Icon(Icons.email_outlined), label: 'Messages'),
-                BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-              ],
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
             ),
           ],
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.white,
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.grey[400],
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(_currentIndex == 0 ? Icons.home_filled : Icons.home_outlined),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(_currentIndex == 1 ? Icons.search : Icons.search_outlined),
+                label: 'Search',
+              ),
+              BottomNavigationBarItem(
+                icon: SizedBox.shrink(), // Placeholder for the FloatingActionButton
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: _buildIconWithBadge(
+                  _currentIndex == 3 ? Icons.notifications_active : Icons.notifications_none_outlined,
+                  _currentIndex == 3,
+                  notificationsCount,
+                ),
+                label: 'Notifications',
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CircleAvatar(
+                    radius: _currentIndex == 4 ? 14 : 12,
+                    backgroundColor: _currentIndex == 4 ? Colors.black : Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: ClipOval(
+                        child: Image.network(
+                          'https://placekitten.com/50/50',
+                          fit: BoxFit.cover,
+                          width: _currentIndex == 4 ? 26 : 22,
+                          height: _currentIndex == 4 ? 26 : 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                label: 'Profile',
+              ),
+            ],
+            onTap: (index) {
+              if (index != 2) { // Prevents tapping the 'Post' placeholder
+                setState(() {
+                  _currentIndex = index;
+                });
+              }
+            },
+          ),
         ),
       ),
     );
